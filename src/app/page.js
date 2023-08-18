@@ -1,37 +1,56 @@
 "use client";
 
-import Counter from "@/features/counter/Counter";
-import Header from "@/components/header";
-import ClientSideIndicator from "@/components/ClientSideIndicator";
-import React from "react";
+import { useGetUsersQuery } from "@/redux/services/userApi";
+import { decrement, increment, reset } from "@/redux/features/counterSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 export default function Home() {
+  const count = useAppSelector((state) => state.counterReducer.value);
+  const dispatch = useAppDispatch();
+
+  const { isLoading, isFetching, data, error } = useGetUsersQuery(null);
+
   return (
-    <main className="container-5xl">
-      <Header />
-
-      <div className="flex flex-col items-center justify-center h-[60vh] border-blue-500 border-[1px] relative">
-        {/* This is only use to indicate clientside tag in ui  */}
-        <ClientSideIndicator label="server side" />
-
-        <h2 className="text-8xl font-semibold mb-5"> Redux Store</h2>
-
-        <h2 className="text-center max-w-[580px] mb-2">
-          {`Next js 13 app Router default using Server Side Components and how we can set up the redux store in Next Js 13?`}
-        </h2>
-
-        <div className="flex gap-5 font-semibold text-gray-800">
-          <a className="underline">Blog</a>
-          <span>|</span>
-          <a className="underline"> Github</a>
-        </div>
-
-        <div className="relative mt-20 p-10 border-red-500 border-[1px]">
-          <ClientSideIndicator label="clientSide" />
-
-          <Counter />
-        </div>
+    <main style={{ maxWidth: 1200, marginInline: "auto", padding: 20 }}>
+      <div style={{ marginBottom: "4rem", textAlign: "center" }}>
+        <h4 style={{ marginBottom: 16 }}>{count}</h4>
+        <button onClick={() => dispatch(increment())}>increment</button>
+        <button
+          onClick={() => dispatch(decrement())}
+          style={{ marginInline: 16 }}
+        >
+          decrement
+        </button>
+        <button onClick={() => dispatch(reset())}>reset</button>
       </div>
+
+      {error ? (
+        <p>Oh no, there was an error</p>
+      ) : isLoading || isFetching ? (
+        <p>Loading...</p>
+      ) : data ? (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr 1fr",
+            gap: 20,
+          }}
+        >
+          {data.map((user) => (
+            <div
+              key={user.id}
+              style={{ border: "1px solid #ccc", textAlign: "center" }}
+            >
+              <img
+                src={`https://robohash.org/${user.id}?set=set2&size=180x180`}
+                alt={user.name}
+                style={{ height: 180, width: 180 }}
+              />
+              <h3>{user.name}</h3>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </main>
   );
 }
