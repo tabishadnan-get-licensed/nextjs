@@ -1,56 +1,66 @@
-"use client";
+// ============================
+// Auth Testing
+// ============================
 
-import { useGetUsersQuery } from "@/redux/services/userApi";
-import { decrement, increment, reset } from "@/redux/features/counterSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { getServerSession } from "next-auth/next";
+import { redirect } from "next/navigation";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
-export default function Home() {
-  const count = useAppSelector((state) => state.counterReducer.value);
-  const dispatch = useAppDispatch();
+// ***** Home Page Component *****
+const Home = async () => {
+  const session = await getServerSession(authOptions);
 
-  const { isLoading, isFetching, data, error } = useGetUsersQuery(null);
+  if (session) {
+    return redirect("/dashboard");
+  } else {
+    return redirect("/signin");
+  }
+};
 
-  return (
-    <main style={{ maxWidth: 1200, marginInline: "auto", padding: 20 }}>
-      <div style={{ marginBottom: "4rem", textAlign: "center" }}>
-        <h4 style={{ marginBottom: 16 }}>{count}</h4>
-        <button onClick={() => dispatch(increment())}>increment</button>
-        <button
-          onClick={() => dispatch(decrement())}
-          style={{ marginInline: 16 }}
-        >
-          decrement
-        </button>
-        <button onClick={() => dispatch(reset())}>reset</button>
-      </div>
+export default Home;
 
-      {error ? (
-        <p>Oh no, there was an error</p>
-      ) : isLoading || isFetching ? (
-        <p>Loading...</p>
-      ) : data ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr",
-            gap: 20,
-          }}
-        >
-          {data.map((user) => (
-            <div
-              key={user.id}
-              style={{ border: "1px solid #ccc", textAlign: "center" }}
-            >
-              <img
-                src={`https://robohash.org/${user.id}?set=set2&size=180x180`}
-                alt={user.name}
-                style={{ height: 180, width: 180 }}
-              />
-              <h3>{user.name}</h3>
-            </div>
-          ))}
-        </div>
-      ) : null}
-    </main>
-  );
-}
+// ============================
+// Redux Testing
+// ============================
+
+// // ***** Use Client *****
+// "use client";
+
+// import React, { useEffect, useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+
+// // ***** Home Page Component *****
+// const Home = () => {
+//   // ***** State *****
+//   const [counterState, setCounterState] = useState(null);
+
+//   // ***** Redux State *****
+//   const dispatch = useDispatch();
+
+//   // ***** counterReducer *****
+//   const counterReducer = useSelector((state) => state?.counter);
+//   const { counter } = counterReducer;
+
+//   // ***** useEffect *****
+//   useEffect(() => {
+//     setCounterState(counter);
+//   }, [counter]);
+
+//   return (
+//     <div>
+//       <p>{!counterState ? "loading..." : counterState}</p>
+//       <p>
+//         <button onClick={() => dispatch({ type: "INCREMENT_FIVE" })}>
+//           increment
+//         </button>
+//       </p>
+//       <p>
+//         <button onClick={() => dispatch({ type: "DECREMENT_FIVE" })}>
+//           decrement
+//         </button>
+//       </p>
+//     </div>
+//   );
+// };
+
+// export default Home;
