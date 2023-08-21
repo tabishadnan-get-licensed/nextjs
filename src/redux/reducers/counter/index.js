@@ -1,5 +1,3 @@
-"use client";
-
 // ***** Counter Reducer *****
 
 import * as COUNTER_TYPE from "@/redux/constants/counter";
