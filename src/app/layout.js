@@ -1,6 +1,8 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
+import { getServerSession } from "next-auth/next";
 import ReduxProvider from "@/redux/providers";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
 // ***** Font *****
 const inter = Inter({ subsets: ["latin"] });
@@ -12,11 +14,12 @@ export const metadata = {
 };
 
 // ***** RootLayout Component *****
-const RootLayout = ({ children }) => {
+const RootLayout = async ({ children }) => {
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider session={session}>{children}</ReduxProvider>
       </body>
     </html>
   );

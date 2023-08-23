@@ -5,7 +5,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 export const authOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      type: "credentials",
+      name: "credentials",
       credentials: {
         username: { label: "email", type: "email" },
         password: { label: "Password", type: "password" },
@@ -18,15 +19,16 @@ export const authOptions = {
             email: "joe@gmail.com",
             password: "123456",
           };
-          return user;
+          return { ...user, ...credentials };
         }
         return null;
       },
     }),
   ],
+  basePath: "/qladmin",
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/signin",
+    signIn: "/qladmin/signin",
   },
 };
 
